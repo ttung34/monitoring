@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quan_ly_muc/item_list/crud/add_item.dart';
 import 'package:quan_ly_muc/item_list/item_list_view.dart';
 import 'package:quan_ly_muc/item_list/item_monitor_view.dart';
 import 'package:quan_ly_muc/model/item_model.dart';
@@ -14,20 +15,23 @@ class HomeScreenView extends StatefulWidget {
 class _HomeScreenViewState extends State<HomeScreenView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  int selectedIndex = 0;
-  final List<ItemModel> _itemModel = [
-    ItemModel(name: 'Mục 1', value: 'Giá trị 1'),
-    ItemModel(name: 'Mục 2', value: 'Giá trị 2'),
-    ItemModel(name: 'Mục 3', value: 'Giá trị 3'),
-  ];
+  int _seletecdIndex = 0;
+  final List<ItemModel> _itemModel = [];
+
+  void _addItem() async {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => AddItemView(itemModel: null)),
+    );
+  }
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       setState(() {
-        selectedIndex = _tabController.index;
+        _seletecdIndex = _tabController.index;
       });
     });
   }
@@ -51,23 +55,26 @@ class _HomeScreenViewState extends State<HomeScreenView>
 
   @override
   Widget build(BuildContext context) {
-    final monitoredCount = _itemModel.where((d) => d.isMonitoring).length;
-
+    final monitoringCount = _itemModel.where((d) => d.isMonitoring).length;
     return ItemMonitorProvider(
-      itemModel: _itemModel,
-      monitoringItem: _itemModel.where((item) => item.isMonitoring).toList(),
+      // itemModel: _itemModel,
+      // monitoringItems: _itemModel.where((item) => item.isMonitoring).toList(),
       toggleMonitoring: toggleMonitoring,
       child: Scaffold(
-        appBar: AppBar(title: const Text("Ứng dụng của tôi")),
+        appBar: AppBar(
+          title: Text(""),
+          actions: [IconButton(onPressed: _addItem, icon: Icon(Icons.add))],
+        ),
         body: TabBarView(
           controller: _tabController,
-          children: const [ItemListview(), ItemMonitorView()],
+          children: const [ItemListView(), ItemMonitoringView()],
         ),
+
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: selectedIndex,
+          currentIndex: _seletecdIndex,
           onTap: (index) {
             setState(() {
-              selectedIndex = index;
+              _seletecdIndex = index;
               _tabController.animateTo(index);
             });
           },
@@ -75,17 +82,17 @@ class _HomeScreenViewState extends State<HomeScreenView>
           items: [
             const BottomNavigationBarItem(
               icon: Icon(Icons.devices),
-              label: 'Danh mục thiết bị',
+              label: "Danh sách mục",
             ),
             BottomNavigationBarItem(
               icon:
-                  monitoredCount > 0
+                  monitoringCount > 0
                       ? Badge.count(
-                        count: monitoredCount,
+                        count: monitoringCount,
                         child: const Icon(Icons.bar_chart),
                       )
                       : const Icon(Icons.bar_chart),
-              label: "Theo doi",
+              label: 'Theo dõi',
             ),
           ],
         ),

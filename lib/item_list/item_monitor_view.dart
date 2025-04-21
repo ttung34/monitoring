@@ -1,33 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:quan_ly_muc/state_manager/item_monitor_provider.dart';
 
-class ItemMonitorView extends StatefulWidget {
-  const ItemMonitorView({super.key});
+class ItemMonitoringView extends StatefulWidget {
+  const ItemMonitoringView({super.key});
 
   @override
-  State<ItemMonitorView> createState() => _ItemMonitorViewState();
+  State<ItemMonitoringView> createState() => _ItemMonitoringViewState();
 }
 
-class _ItemMonitorViewState extends State<ItemMonitorView> {
+class _ItemMonitoringViewState extends State<ItemMonitoringView> {
   @override
   Widget build(BuildContext context) {
-    final provider = ItemMonitorProvider.of(context);
-
+    final provider = ItemMonitorProvider.of(context)?.itemModel;
     return Scaffold(
-      appBar: AppBar(title: const Text("Item Monitor")),
+      appBar: AppBar(title: const Text("Danh sách mục")),
       body: ListView.builder(
         itemCount: provider?.itemModel.length ?? 0,
         itemBuilder: (context, index) {
-          final item = provider?.itemModel[index];
+          final item = provider!.itemModel[index];
           return ListTile(
-            title: Text(item?.name ?? ""),
-            subtitle: Text(item?.value ?? ""),
+            title: Text(item.name ?? ""),
+            subtitle: Text(item.value ?? ""),
             trailing: Icon(
-              item!.isMonitoring
+              item.isMonitoring
                   ? Icons.check_box
                   : Icons.check_box_outline_blank,
             ),
-            onTap: () => provider!.toggleMonitoring(item),
+            onTap: () => provider.isMonitoring(item.id),
           );
         },
       ),

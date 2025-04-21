@@ -1,16 +1,19 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:quan_ly_muc/model/item_model.dart';
+import 'package:quan_ly_muc/vew_model/item_view_model.dart';
 
 class ItemMonitorProvider extends InheritedWidget {
-  final List<ItemModel> itemModel;
-  final List<ItemModel> monitoringItem;
-  final Function(ItemModel itemModel) toggleMonitoring;
+  // final List<ItemModel> itemModel;
+  // final List<ItemModel> monitoringItems;
+  final ItemViewModel? itemModel;
+  final ItemViewModel? monitoringItems;
+  final void Function(ItemModel itemModel) toggleMonitoring;
 
   const ItemMonitorProvider({
     super.key,
     required super.child,
-    required this.itemModel,
-    required this.monitoringItem,
+     this.itemModel,
+     this.monitoringItems,
     required this.toggleMonitoring,
   });
 
@@ -21,6 +24,6 @@ class ItemMonitorProvider extends InheritedWidget {
   @override
   bool updateShouldNotify(ItemMonitorProvider oldWidget) {
     return itemModel != oldWidget.itemModel ||
-        monitoringItem != oldWidget.monitoringItem;
+        monitoringItems != oldWidget.monitoringItems;
   }
 }
