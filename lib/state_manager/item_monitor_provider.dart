@@ -5,15 +5,15 @@ import 'package:quan_ly_muc/vew_model/item_view_model.dart';
 class ItemMonitorProvider extends InheritedWidget {
   // final List<ItemModel> itemModel;
   // final List<ItemModel> monitoringItems;
-  final ItemViewModel? itemModel;
+  final ItemViewModel? itemViewModel;
   final ItemViewModel? monitoringItems;
   final void Function(ItemModel itemModel) toggleMonitoring;
 
   const ItemMonitorProvider({
     super.key,
     required super.child,
-     this.itemModel,
-     this.monitoringItems,
+    required this.itemViewModel,
+    required this.monitoringItems,
     required this.toggleMonitoring,
   });
 
@@ -23,7 +23,7 @@ class ItemMonitorProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(ItemMonitorProvider oldWidget) {
-    return itemModel != oldWidget.itemModel ||
+    return itemViewModel != oldWidget.itemViewModel ||
         monitoringItems != oldWidget.monitoringItems;
   }
 }

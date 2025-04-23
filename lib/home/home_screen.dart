@@ -4,6 +4,7 @@ import 'package:quan_ly_muc/item_list/item_list_view.dart';
 import 'package:quan_ly_muc/item_list/item_monitor_view.dart';
 import 'package:quan_ly_muc/model/item_model.dart';
 import 'package:quan_ly_muc/state_manager/item_monitor_provider.dart';
+import 'package:quan_ly_muc/vew_model/item_view_model.dart';
 
 class HomeScreenView extends StatefulWidget {
   const HomeScreenView({super.key});
@@ -16,12 +17,23 @@ class _HomeScreenViewState extends State<HomeScreenView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _seletecdIndex = 0;
-  final List<ItemModel> _itemModel = [];
+  final ItemViewModel _itemViewModel = ItemViewModel();
+  // final List<ItemModel> _itemModel = [];
 
   void _addItem() async {
-    Navigator.pushReplacement(
+    final provider = ItemMonitorProvider.of(context)?.itemViewModel;
+    Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddItemView(itemModel: null)),
+      MaterialPageRoute(
+        builder:
+            (context) => ItemMonitorProvider(
+              itemViewModel: _itemViewModel, // Sử dụng _itemViewModel từ State
+              monitoringItems: _itemViewModel,
+              toggleMonitoring:
+                  (item) => _itemViewModel.toggleItemStatus(item.id),
+              child: AddItemView(itemViewModel: _itemViewModel),
+            ),
+      ),
     );
   }
 
@@ -43,26 +55,31 @@ class _HomeScreenViewState extends State<HomeScreenView>
   }
 
   void toggleMonitoring(ItemModel itemModel) {
+    _itemViewModel.toggleItemStatus(itemModel.id);
     setState(() {
-      final index = _itemModel.indexWhere((d) => d == itemModel);
+      final index = _itemViewModel.itemModel.indexWhere((d) => d == itemModel);
       if (index == -1) {
-        _itemModel[index] = _itemModel[index].copyWith(
-          isMonitoring: !_itemModel[index].isMonitoring,
-        );
+        _itemViewModel.itemModel[index] = _itemViewModel.itemModel[index]
+            .copyWith(
+              isMonitoring: !_itemViewModel.itemModel[index].isMonitoring,
+            );
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final monitoringCount = _itemModel.where((d) => d.isMonitoring).length;
+    final monitoringCount =
+        _itemViewModel.itemModel.where((d) => d.isMonitoring).length;
     return ItemMonitorProvider(
-      // itemModel: _itemModel,
-      // monitoringItems: _itemModel.where((item) => item.isMonitoring).toList(),
-      toggleMonitoring: toggleMonitoring,
+      itemViewModel: _itemViewModel,
+      monitoringItems: _itemViewModel,
+      toggleMonitoring: (item) {
+        _itemViewModel.toggleItemStatus(item.id);
+      },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(""),
+          title: Text("Danh mục sản phẩm"),
           actions: [IconButton(onPressed: _addItem, icon: Icon(Icons.add))],
         ),
         body: TabBarView(

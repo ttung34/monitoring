@@ -3,18 +3,15 @@ import 'dart:convert';
 
 class ItemModel {
   String id;
-  String name;
-  String value;
+  String? name;
+  String? value;
   bool isMonitoring;
   ItemModel({
     required this.id,
-    required this.name,
-    required this.value,
+    this.name,
+    this.value,
     this.isMonitoring = true,
   });
-  void toggleDone() {
-    isMonitoring = !isMonitoring;
-  }
 
   ItemModel copyWith({
     String? id,

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:quan_ly_muc/home/home_screen.dart';
 import 'package:quan_ly_muc/model/item_model.dart';
 import 'package:quan_ly_muc/state_manager/item_monitor_provider.dart';
 import 'package:quan_ly_muc/vew_model/item_view_model.dart';
 
 class AddItemView extends StatefulWidget {
-  const AddItemView({this.itemModel, super.key});
+  const AddItemView({this.itemViewModel, this.itemModel, super.key});
+  final ItemViewModel? itemViewModel;
   final ItemModel? itemModel;
 
   @override
@@ -34,25 +34,38 @@ class _AddItemViewState extends State<AddItemView> {
     super.dispose();
   }
 
-  void _saveTodo() {
-    if (_formKey.currentState!.validate()) {
-      final name = _nameController.text;
-      final value = _titelController.text;
-      final itemModel = ItemMonitorProvider.of(context)?.itemModel;
-      if (widget.itemModel == null) {
-        itemModel?.addTask(name, value);
+  void _saveTodo() async {
+    try {
+      if (_formKey.currentState!.validate()) {
+        final provider = ItemMonitorProvider.of(context)?.itemViewModel;
+        if (provider != null) {
+          if (widget.itemModel == null) {
+            await provider.addTask(_nameController.text, _titelController.text);
+          }
+          if (context.mounted) {
+            Navigator.pop(context, true);
+          }
+        } else {
+          await provider?.update(
+            widget.itemModel!.id,
+            _nameController.text,
+            _titelController.text,
+          );
+          if (context.mounted) {
+            Navigator.pop(context, true);
+          }
+        }
       } else {
-        itemModel?.update(widget.itemModel!.id, name, value);
+        print("Lỗi: ItemViewModel không tồn tại");
       }
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreenView()),
-      );
+    } catch (e) {
+      print("Lỗi khi ấn nút thêm $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = ItemMonitorProvider.of(context)?.itemViewModel;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -88,7 +101,10 @@ class _AddItemViewState extends State<AddItemView> {
                 },
               ),
               SizedBox(height: 20),
-              ElevatedButton(onPressed: _saveTodo, child: Text('Lưu')),
+              ElevatedButton(
+                onPressed: _saveTodo,
+                child: Text(widget.itemModel == null ? "Thêm" : "Cập nhật"),
+              ),
             ],
           ),
         ),

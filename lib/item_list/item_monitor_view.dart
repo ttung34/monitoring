@@ -11,9 +11,12 @@ class ItemMonitoringView extends StatefulWidget {
 class _ItemMonitoringViewState extends State<ItemMonitoringView> {
   @override
   Widget build(BuildContext context) {
-    final provider = ItemMonitorProvider.of(context)?.itemModel;
+    final provider = ItemMonitorProvider.of(context)?.itemViewModel;
+    // Chỉ hiển thị các item khi đang được monitoring
+    final monitoringItems =
+        provider?.itemModel?.where((item) => item.isMonitoring).toList() ?? [];
     return Scaffold(
-      appBar: AppBar(title: const Text("Danh sách mục")),
+      // appBar: AppBar(title: const Text("Danh sách mục")),
       body: ListView.builder(
         itemCount: provider?.itemModel.length ?? 0,
         itemBuilder: (context, index) {
@@ -26,7 +29,7 @@ class _ItemMonitoringViewState extends State<ItemMonitoringView> {
                   ? Icons.check_box
                   : Icons.check_box_outline_blank,
             ),
-            onTap: () => provider.isMonitoring(item.id),
+            onTap: () => provider.toggleItemStatus(item.id),
           );
         },
       ),
