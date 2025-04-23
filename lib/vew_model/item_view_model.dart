@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:quan_ly_muc/model/item_model.dart';
+import 'package:quan_ly_muc/service/firebase_store_service.dart';
 
 class ItemViewModel extends ChangeNotifier {
+  final FirebaseStoreService _firebaseStoreService = FirebaseStoreService();
   // Danh sách các Item
   final List<ItemModel> _itemModel = [];
   // Item đang được chọn để chỉnh sửa
@@ -21,13 +23,13 @@ class ItemViewModel extends ChangeNotifier {
       value: value,
       isMonitoring: false,
     );
-    _itemModel.add(newItem);
+    _firebaseStoreService.addTask(newItem);
     notifyListeners();
   }
 
   Future<void> update(String id, String name, String value) async {
-    final index = _itemModel.indexWhere(((itemModel) => itemModel.id == id));
     try {
+      final index = _itemModel.indexWhere(((itemModel) => itemModel.id == id));
       if (index != -1) {
         _itemModel[index] = ItemModel(
           id: _itemModel[index].id,
@@ -39,6 +41,7 @@ class ItemViewModel extends ChangeNotifier {
         _isEdding = false;
         notifyListeners();
       }
+      _firebaseStoreService.updateTask(itemModel[index]);
     } catch (e) {
       print("lỗi update $e");
     }
@@ -62,6 +65,7 @@ class ItemViewModel extends ChangeNotifier {
         _isEdding = false;
       }
       notifyListeners();
+      _firebaseStoreService.removeTask(id);
     } catch (e) {
       print("Lỗi khi xoá giá trị $e");
     }

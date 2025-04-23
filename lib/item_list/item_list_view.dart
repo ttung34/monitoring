@@ -12,20 +12,20 @@ class _ItemListViewState extends State<ItemListView> {
   @override
   Widget build(BuildContext context) {
     final provider = ItemMonitorProvider.of(context)?.itemViewModel;
+    // Chỉ hiển thị các item khi đang được monitoring
     final monitoringItems =
-        provider?.itemModel.where((item) => item.isMonitoring).toList() ?? [];
-
+        provider?.itemModel.map((item) => item).toList() ?? [];
     return Scaffold(
       // appBar: AppBar(title: const Text("Danh sách mục")),
       body: ListView.builder(
-        itemCount: monitoringItems.length,
+        itemCount: monitoringItems.length ?? 0,
         itemBuilder: (context, index) {
           final item = monitoringItems[index];
           return ListTile(
             title: Text(item.name ?? ""),
             subtitle: Text(item.value ?? ""),
             trailing: Icon(
-              item!.isMonitoring
+              item.isMonitoring
                   ? Icons.check_box
                   : Icons.check_box_outline_blank,
             ),

@@ -1,5 +1,5 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ItemModel {
   String id;
@@ -43,6 +43,23 @@ class ItemModel {
       value: map['value'] as String,
       isMonitoring: map['isMonitoring'] as bool,
     );
+  }
+  factory ItemModel.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    return ItemModel(
+      id: doc.id,
+      name: data['name'] ?? '',
+      value: data['value'] ?? '',
+      isMonitoring: data['isMonitoring'] ?? false,
+    );
+  }
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'name': name,
+      'value': value,
+      'isMonitoring': isMonitoring,
+    };
   }
 
   String toJson() => json.encode(toMap());
